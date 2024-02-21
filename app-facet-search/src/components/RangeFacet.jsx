@@ -30,14 +30,14 @@ function RangeFacet({ item, nameshow, name, key, labels, isInitOpen, uiType, dis
       </div>
       <Collapse isOpen={isOpen}>
         <div className="panel-body index-body">
-          {item != null && uiType === "SelectBox" && (
-            <RangeSelect values={item.buckets} name={name} labels={labels} />
+          {uiType === "SelectBox" && (
+            <RangeSelect values={item} name={name} labels={labels} />
           )}
           {item != null && uiType === "CheckboxList" &&  (
-            <RangeCheckboxList values={item.buckets} name={name} labels={labels} displayNumber={displayNumber} />
+            <RangeCheckboxList values={item} name={name} labels={labels} displayNumber={displayNumber} />
           )}
           {item != null && uiType === "RangeSlider" && (
-            <RangeSlider value={item.buckets} name={name} labels={labels} />
+            <RangeSlider value={item} name={name} labels={labels} />
           )}
         </div>
       </Collapse>

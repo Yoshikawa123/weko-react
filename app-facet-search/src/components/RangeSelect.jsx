@@ -1,7 +1,8 @@
 import "rc-slider/assets/index.css";
 import "rc-tooltip/assets/bootstrap.css";
-import React from "react";
+import React, { useState } from "react";
 import Select from "react-select";
+import FacetSearch from "../App.js"
 
 function RangeSelect({ values, name, labels }) {
   function handleChange(params) {
@@ -27,6 +28,9 @@ function RangeSelect({ values, name, labels }) {
     });
     search = search.replace("q=0", "q=");
     search += search.indexOf('is_facet_search=') == -1 ? '&is_facet_search=true' : '';
+    if(sessionStorage.getItem('init_detail_condition')){
+      sessionStorage.setItem('btn', 'detail-search');
+    }   
     window.location.href = "/search" + search;
   }
 
@@ -36,25 +40,73 @@ function RangeSelect({ values, name, labels }) {
     params[i] = decodeURIComponent(params[i]);
   }
   let defaultOptions = [];
-  let options = [];
+  let options = [];  
   if (values) {
-    values.map(function (subitem, k) {
-      let option = {
-        label: (labels[subitem.key] || subitem.key) + "(" + subitem.doc_count + ")",
-        value: subitem.key
-      };
-      options.push(option);
-      let pattern = name + "=" + subitem.key;
-      if (params.indexOf(pattern) != -1) {
-        defaultOptions.push(option);
-      }
-    });
+    if(values.length > 0){
+      values.map(function (subitem, k) {
+        let option = {
+          label: (labels[subitem.name] || subitem.name) + "(" + subitem.count + ")",
+          value: subitem.name
+        };
+        options.push(option);
+        let pattern = name + "=" + subitem.name;
+        if (params.indexOf(pattern) != -1) {
+          defaultOptions.push(option);
+        }
+      });
+    }
+    if(values.length == 0){
+      const regex = new RegExp(name);
+      params.forEach(item => {
+          if (regex.test(item)) {
+              let option = {
+                label: item.split('=')[1] + "(0)",
+                value: item.split('=')[1]
+              };
+              defaultOptions.push(option);
+          }
+      });
+    }
   }
+
+  let [stateOptions, setOptions] = useState(options);
+  let [stateDefaultOptions, setdefaultOptions] = useState(defaultOptions);
+  const [isFirstClick, setIsFirstClick] = useState(true);
+  const FacetSearchInstance = new FacetSearch();
+  const containsString = params.some(item => item.includes(name));
+
+  const loadOptions = () => {
+      if (isFirstClick) {
+        setIsFirstClick(false);
+        if (!containsString){
+          FacetSearchInstance.get_facet_search_list(name)
+          .then((result) => {
+            let list_facet = result
+            const values = list_facet[name];
+            let options = [];
+            if (values) {
+              values.map(function (subitem, k) {
+                let option = {
+                  label: (labels[subitem.name] || subitem.name) + "(" + subitem.count + ")",
+                  value: subitem.name
+                };
+                options.push(option);
+              });
+            }
+            setOptions(options);
+          })
+          .catch((error) => {
+            console.error('Error occurred:', error);
+          });
+          }
+      }
+  };
+  
   return (
     <div>
       <div className="select-container">
         <Select
-          defaultValue={defaultOptions}
+          defaultValue={stateDefaultOptions}
           isMulti
           name="Facet_Search"
           ontrolShouldRenderValue={false} 
@@ -63,7 +115,8 @@ function RangeSelect({ values, name, labels }) {
           }}
           backspaceRemovesValue={false}
           isClearable={false}
-          options={options}
+          options={stateOptions}
+          onMenuOpen={loadOptions}
           className="basic-multi-select"
           classNamePrefix="select"
         />
