@@ -136,7 +136,8 @@ class FacetSearch extends React.Component {
             use_facet_name.push(name)
           }
         })}
-        if(use_facet_name.length > 0){
+        const isRecordsPath = window.location.pathname.split('/')[1].includes('records');
+        if(use_facet_name.length > 0 && !isRecordsPath){
           self.get_facet_search_list(use_facet_name)
             .then(data => {
               self.setState({ is_enable: true });

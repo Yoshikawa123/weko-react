@@ -41,32 +41,18 @@ function RangeSelect({ values, name, labels }) {
   }
   let defaultOptions = [];
   let options = [];  
-  if (values) {
-    if(values.length > 0){
-      values.map(function (subitem, k) {
-        let option = {
-          label: (labels[subitem.name] || subitem.name) + "(" + subitem.count + ")",
-          value: subitem.name
-        };
-        options.push(option);
-        let pattern = name + "=" + subitem.name;
-        if (params.indexOf(pattern) != -1) {
-          defaultOptions.push(option);
-        }
-      });
-    }
-    if(values.length == 0){
-      const regex = new RegExp(name);
-      params.forEach(item => {
-          if (regex.test(item)) {
-              let option = {
-                label: item.split('=')[1] + "(0)",
-                value: item.split('=')[1]
-              };
-              defaultOptions.push(option);
-          }
-      });
-    }
+  if(values){
+    values.map(function (subitem, k) {
+      let option = {
+        label: (labels[subitem.name] || subitem.name) + "(" + subitem.count + ")",
+        value: subitem.name
+      };
+      options.push(option);
+      let pattern = name + "=" + subitem.name;
+      if (params.indexOf(pattern) != -1) {
+        defaultOptions.push(option);
+      }
+    });
   }
 
   let [stateOptions, setOptions] = useState(options);
