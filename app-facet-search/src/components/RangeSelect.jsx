@@ -39,8 +39,16 @@ function RangeSelect({ values, name, labels }) {
   for (let i = 0; i < params.length; i++) {
     params[i] = decodeURIComponent(params[i]);
   }
+  let usedParams = [];
+  const regex = new RegExp(name);
+  params.forEach(value => {
+      if (regex.test(value)) {
+          usedParams.push(value);
+      }
+  });
+
   let defaultOptions = [];
-  let options = [];  
+  let options = []; 
   if(values){
     values.map(function (subitem, k) {
       let option = {
@@ -52,7 +60,20 @@ function RangeSelect({ values, name, labels }) {
       if (params.indexOf(pattern) != -1) {
         defaultOptions.push(option);
       }
+      let index = usedParams.findIndex(item => item === pattern);
+      if (index !== -1) {
+        usedParams.splice(index, 1);
+      }
     });
+  }
+  if(usedParams.length > 0){
+    usedParams.forEach(value => {
+      let defaultOption = {
+        label: value.split('=')[1] + '(0)',
+        value: value.split('=')[1]
+      };
+      defaultOptions.push(defaultOption);
+  });
   }
 
   let [stateOptions, setOptions] = useState(options);
