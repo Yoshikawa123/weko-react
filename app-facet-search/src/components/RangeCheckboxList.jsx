@@ -220,9 +220,6 @@ function RangeCheckboxList({ values, name, labels, displayNumber }) {
     });
     search = search.replace("q=0", "q=");
     search += search.indexOf('is_facet_search=') == -1 ? '&is_facet_search=true' : '';
-    if(sessionStorage.getItem('init_detail_condition')){
-      sessionStorage.setItem('btn', 'detail-search');
-    }   
     window.location.href = "/search" + search;
   }
 

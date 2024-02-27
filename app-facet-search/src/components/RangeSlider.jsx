@@ -54,9 +54,6 @@ function RangeSlider({ value, name, labels }) {
     }
     if (pattern) {
       search += pattern;
-      if(sessionStorage.getItem('init_detail_condition')){
-        sessionStorage.setItem('btn', 'detail-search');
-      } 
       window.location.href = "/search" + search;
     }
   }

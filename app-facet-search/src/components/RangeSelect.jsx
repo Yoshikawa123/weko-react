@@ -28,9 +28,6 @@ function RangeSelect({ values, name, labels }) {
     });
     search = search.replace("q=0", "q=");
     search += search.indexOf('is_facet_search=') == -1 ? '&is_facet_search=true' : '';
-    if(sessionStorage.getItem('init_detail_condition')){
-      sessionStorage.setItem('btn', 'detail-search');
-    }   
     window.location.href = "/search" + search;
   }
 
@@ -49,8 +46,8 @@ function RangeSelect({ values, name, labels }) {
 
   let defaultOptions = [];
   let options = []; 
-  if(values){
-    values.map(function (subitem, k) {
+  if (values){
+    values.map(function (subitem) {
       let option = {
         label: (labels[subitem.name] || subitem.name) + "(" + subitem.count + ")",
         value: subitem.name
@@ -77,22 +74,22 @@ function RangeSelect({ values, name, labels }) {
   }
 
   let [stateOptions, setOptions] = useState(options);
-  let [stateDefaultOptions, setdefaultOptions] = useState(defaultOptions);
   const [isFirstClick, setIsFirstClick] = useState(true);
   const FacetSearchInstance = new FacetSearch();
-  const containsString = params.some(item => item.includes(name));
+  const isEnabledFacetSearch = params.some(item => item.includes(name));
 
+  // Get options on click
   const loadOptions = () => {
       if (isFirstClick) {
         setIsFirstClick(false);
-        if (!containsString){
+        if (!isEnabledFacetSearch){
           FacetSearchInstance.get_facet_search_list(name)
           .then((result) => {
             let list_facet = result
             const values = list_facet[name];
             let options = [];
             if (values) {
-              values.map(function (subitem, k) {
+              values.map(function (subitem) {
                 let option = {
                   label: (labels[subitem.name] || subitem.name) + "(" + subitem.count + ")",
                   value: subitem.name
@@ -103,7 +100,7 @@ function RangeSelect({ values, name, labels }) {
             setOptions(options);
           })
           .catch((error) => {
-            console.error('Error occurred:', error);
+            console.error('loadOptions error occurred:', error);
           });
           }
       }
@@ -113,7 +110,7 @@ function RangeSelect({ values, name, labels }) {
     <div>
       <div className="select-container">
         <Select
-          defaultValue={stateDefaultOptions}
+          defaultValue={defaultOptions}
           isMulti
           name="Facet_Search"
           ontrolShouldRenderValue={false} 

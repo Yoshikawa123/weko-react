@@ -50,7 +50,6 @@ class FacetSearch extends React.Component {
         this.setState({ list_uiType: uiTypeLst });
         this.setState({ list_isOpen: isOpenLst });
         this.setState({ list_displayNumber: displayNumberLst });
-        // this.setState({ is_enable: true });
       });
   }
 
@@ -72,10 +71,7 @@ class FacetSearch extends React.Component {
     let list_facet = {};
     if (data) {
       Object.keys(data).map(function (name, k) {
-        //let val = data[name][name] ? data[name][name] : data[name];
-        //let hasBuckets = val["key"] && val["key"].hasOwnProperty("buckets");
-        let hasName;
-        hasName = data.hasOwnProperty(name);
+        let hasName = data.hasOwnProperty(name);
         if (hasName) {
           list_facet[name] = data[name];
           // //START:temporary fix for JDCat
@@ -129,10 +125,10 @@ class FacetSearch extends React.Component {
       .then(data => {
         const { list_order, list_uiType} = this.state;
         let use_facet_name = []
-        {Object.keys(list_order).map(function (order, key) {
+        {Object.keys(list_order).map(function (order) {
           const name = list_order[order];
-          const containsString = params.some(item => item.includes(name));
-          if(containsString || list_uiType[name] === "CheckboxList" || list_uiType[name] === "RangeSlider"){
+          const isEnabledFacetSearch = params.some(item => item.includes(name));
+          if(isEnabledFacetSearch || list_uiType[name] === "CheckboxList" || list_uiType[name] === "RangeSlider"){
             use_facet_name.push(name)
           }
         })}
@@ -148,7 +144,7 @@ class FacetSearch extends React.Component {
         }
       })
       .catch(error => {
-        console.error('Error occurred:', error);
+        console.error('getTitleAndOrder error occurred:', error);
       });
   }
 
